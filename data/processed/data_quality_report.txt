@@ -1,0 +1,72 @@
+================================================================================
+SPOTIFY DATASET - DATA QUALITY REPORT
+================================================================================
+
+Total Rows: 114,000
+Total Columns: 26
+Memory Usage: 58.75 MB
+Duplicate Rows: 0
+
+COLUMNS:
+--------------------------------------------------------------------------------
+  - Unnamed: 0
+  - track_id
+  - artists
+  - album_name
+  - track_name
+  - popularity
+  - duration_ms
+  - explicit
+  - danceability
+  - energy
+  - key
+  - loudness
+  - mode
+  - speechiness
+  - acousticness
+  - instrumentalness
+  - liveness
+  - valence
+  - tempo
+  - time_signature
+  - track_genre
+  - duration_min
+  - mood_energy
+  - energy_category
+  - popularity_category
+  - tempo_category
+
+
+MISSING VALUES:
+--------------------------------------------------------------------------------
+  No missing values!
+
+
+DATA TYPES:
+--------------------------------------------------------------------------------
+  Unnamed: 0: int64
+  track_id: object
+  artists: object
+  album_name: object
+  track_name: object
+  popularity: int64
+  duration_ms: int64
+  explicit: bool
+  danceability: float64
+  energy: float64
+  key: int64
+  loudness: float64
+  mode: int64
+  speechiness: float64
+  acousticness: float64
+  instrumentalness: float64
+  liveness: float64
+  valence: float64
+  tempo: float64
+  time_signature: int64
+  track_genre: object
+  duration_min: float64
+  mood_energy: object
+  energy_category: category
+  popularity_category: category
+  tempo_category: category
