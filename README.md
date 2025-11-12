@@ -86,35 +86,49 @@ track_genre: Musical genre classification of the track.
 
 ## Business Requirements & Solutions
 1. **Understand Key Drivers of Song Popularity**
+
 Stakeholders want to know which track features (e.g., genre, energy, length) drive popularity.
+
 **Solution**: XGBoost ML model with feature importance analysis
 - Interactive dashboard shows top 20 most important features
 - Genre is the strongest predictor (importance: 0.0986)
 - Track length, explicit content, and energy levels are significant
 - **Access**: ML Model tab in Streamlit dashboard
+ 
 2. **Classify Songs by Mood and Energy**
+  
 The product team requires a system to categorize songs by mood for mood-based playlists.
+
 **Solution**: Automated mood/energy classification system
 - 4 mood categories: Happy/High Energy, Energetic/Sad, Chill/Happy, Sad/Low Energy
 - Based on valence (positivity) and energy scores
 - Visualized in interactive pie charts
 - **Access**: Visualizations tab → Mood & Energy section
+  
 3. **Genre-Level Analysis**
+   
 Marketing and analytics teams need insights into genre trends and performance.
+
 **Solution**: Comprehensive genre analytics and visualizations
 - 114 unique genres analyzed across 114,000 tracks
 - Top 20 genres by track count displayed
 - Genre-specific popularity trends
 - **Access**: Data Explorer + Visualizations tabs
+  
 4. **Support Playlist Curation**
+   
 Users should be able to filter and find similar tracks for playlist creation.
+
 **Solution**: Advanced filtering and similarity search
 - Filter by genre, popularity range, and audio features
 - Download curated track lists as CSV
 - Find similar successful tracks in the same genre
 - **Access**: Data Explorer tab with multi-select filters
+  
 5. **Data-Driven Music Recommendations**
+   
 Music producers need predictive tools for optimizing new track performance.
+
 **Solution**: AI-powered recommendation engine for track optimization
 - Predict popularity for new tracks (0-100 score)
 - Get up to 5 actionable recommendations to maximize audience
