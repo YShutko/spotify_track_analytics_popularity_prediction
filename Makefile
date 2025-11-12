@@ -17,10 +17,15 @@ help: ## Show this help message
 	@echo "=============================================="
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install: ## Install all dependencies
-	@echo "📦 Installing dependencies..."
+install: ## Install production dependencies
+	@echo "📦 Installing production dependencies..."
 	$(PIP) install -r requirements.txt
-	$(PIP) install black flake8 pylint nbdime papermill ipykernel
+	@echo "✅ Installation complete!"
+
+install-dev: ## Install all dependencies (production + development)
+	@echo "📦 Installing all dependencies..."
+	$(PIP) install -r requirements.txt
+	$(PIP) install -r requirements-dev.txt
 	$(PYTHON) -m ipykernel install --user --name spotify_env
 	nbdime config-git --enable --global
 	@echo "✅ Installation complete!"
@@ -120,9 +125,9 @@ requirements: ## Generate/update requirements.txt
 	$(PIP) freeze > requirements_frozen.txt
 	@echo "✅ Requirements saved to requirements_frozen.txt"
 
-dev: ## Install development dependencies
+dev: ## Install development dependencies only
 	@echo "🛠️  Installing development tools..."
-	$(PIP) install -U black flake8 pylint pytest nbdime papermill ipykernel jupyter
+	$(PIP) install -r requirements-dev.txt
 	@echo "✅ Dev tools installed!"
 
 status: ## Show pipeline status

@@ -1,0 +1,33 @@
+# Development Dependencies
+# Install with: pip install -r requirements-dev.txt
+
+# Code Quality & Linting
+black>=23.0.0
+flake8>=6.0.0
+pylint>=2.17.0
+isort>=5.12.0
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
+# Notebook Tools
+jupyter>=1.0.0
+jupyterlab>=4.0.0
+ipykernel>=6.25.0
+papermill>=2.4.0
+nbdime>=3.2.0
+nbconvert>=7.8.0
+
+# Profiling & EDA (can be removed before deployment)
+ydata-profiling>=4.12.0
+ppscore>=1.1.0
+yellowbrick>=1.5
+
+# Documentation
+mkdocs>=1.5.0
+mkdocs-material>=9.2.0
+
+# Git Hooks
+pre-commit>=3.3.0
