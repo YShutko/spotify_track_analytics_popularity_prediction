@@ -172,85 +172,137 @@ The visualizations used in this project were chosen to help uncover the relation
 
 1. Correlation Heatmap: Key Audio Features
 - Image: key_feature_correlation_heatmap.png
+  
 This heatmap displays the correlation matrix for five key audio features: popularity, tempo, valence, energy, and danceability. The goal was to identify which features are interrelated. While valence and danceability show a moderate correlation (0.48), the weak correlation with popularity confirms the need for a more complex model like XGBoost to capture non-linear relationships.
+
 2. Pairplot: Audio Features Distribution and Interaction
-- Image: key_features_pairplot.png
+  - Image: key_features_pairplot.png
+    
 The pairplot complements the heatmap by visualizing feature distributions and pairwise relationships. Diagonal histograms reveal how each feature is distributed, while scatter plots between variables show clusters and potential trends. This guided the data preprocessing and feature selection phases.
+
 3. Heatmap: Audio Features vs. Popularity
 - Image: popularity_drivers_heatmap.png
+  
 This extended heatmap includes more audio features (loudness, acousticness, instrumentalness, etc.) and their correlation with popularity. While individual correlations with popularity are weak, this confirmed our hypothesis that popularity is influenced by a combination of features rather than a single metric.
+
 4. Popularity by Mood & Energy Classification
 - Image: popularity_vs_mood_energy.png
+  
 Tracks were categorized into 4 mood/energy clusters based on valence and energy. A violin plot was used to show popularity distribution per group. Interestingly, Happy/High Energy tracks show slightly higher popularity medians, supporting the business use case for mood-based playlist curation.
+
 5. Popularity by Time Signature (Binned)
 - Image: time_signature_binned_avg_popularity.png
+  
 This bar chart shows how time signature (a rhythmic element) correlates with popularity. While the difference is not drastic, tracks with a time signature below 4 (e.g., 3/4) have marginally higher average popularity, sparking potential insights for music production.
+
 6. Top 20 Artists by Average Popularity
 - Image: top_artists_popularity.png
+  
 This horizontal bar chart ranks the top 20 artists based on average popularity across tracks. It serves as a benchmark for aspiring artists and supports the project’s recommendation engine, which can compare new tracks against popular artists' features.
+
 7. Distribution of Valence
 - Image: distribution_valence.png
+  
 Understanding the distribution of valence (musical positivity) provides context for mood classification. The distribution is relatively symmetrical, suggesting a balanced dataset. This insight confirmed the feasibility of segmenting songs into mood categories for personalized recommendations.
+
 8. Popularity by Danceability (Binned)
 - Image: danceability_binned_avg_popularity.png
+  
 This bar chart visualizes average song popularity across binned danceability values (standardized). The pattern reveals that moderately danceable tracks—those with danceability around the normalized range of 0.08 to 0.88—tend to score higher in average popularity, peaking at 35.
 In contrast, extremely low or high danceability appears to slightly reduce popularity. This insight challenges the common assumption that maximum danceability guarantees success and supports a data-driven balance in production. It contributes to the recommendation engine by identifying optimal danceability ranges for potential hit songs.
+
 9. Distribution of Danceability
 - Image: distribution_danceability.png
+  
 This histogram shows how the danceability feature is distributed across the dataset. The near-normal shape, centered around 0 (due to standardization), indicates a well-balanced feature with no extreme skew. This validates its use in modeling without further transformation. The even spread across low, medium, and high values also supports the use of binning for more granular analysis, as seen in rationale #8.
+
 10. Distribution of Energy
 - Image: distribution_energy.png
+  
 This histogram illustrates the distribution of the energy feature. Unlike danceability, energy shows a right-skewed distribution, with more songs having lower energy scores. This suggests that calmer tracks dominate the dataset. Identifying this skew helps guide preprocessing decisions and informs model tuning—especially when normalizing or using tree-based algorithms like XGBoost that are robust to skew.
+
 11. Distribution of Popularity
 - Image: distribution_popularity.png
+  
 The popularity distribution is heavily left-skewed, with the largest group of tracks having very low popularity scores. This confirms the long-tail nature of streaming data: a few tracks are extremely popular, while the majority receive little attention. This imbalance justifies using stratified sampling or resampling techniques when building predictive models and highlights the importance of focusing on relative rather than absolute popularity.
+
 12. Distribution of Tempo
 - Image: distribution_tempo.png
+  
 This histogram shows a multimodal distribution for tempo, reflecting the diversity of musical genres (e.g., ballads, EDM, hip-hop) within the dataset. Peaks around standardized 0 suggest a central tendency, but the multiple modes indicate that clustering or segmentation might benefit from using tempo as a feature. This also informs mood- or genre-specific recommendations.
+
 13. Popularity by Acousticness (Binned)
 - Image: acousticness_binned_avg_popularity.png
+  
 This bar chart compares average popularity across binned values of acousticness. A subtle U-shaped pattern emerges—songs with moderate acousticness tend to be more popular, while very high or low acousticness scores are linked to lower average popularity. This supports the hypothesis that a balance between synthetic and acoustic elements may be more appealing to listeners and is useful for optimizing track production features.
+
 14. Top 20 Artists by Average Track Popularity (All Songs)
 - Image: avg_popularity_per_artist.png
+  
 This horizontal bar chart shows the top 20 artists ranked by average track popularity, without filtering for a minimum number of songs. Compared to rationale #8 (which required ≥10 tracks per artist), this plot includes collaborations and artists with fewer songs, highlighting trending or viral artists. The inclusion of names like Sam Smith & Kim Petras, Beyoncé, and Rauw Alejandro underlines the impact of single releases and collabs on overall popularity. This visualization supports playlist curation, trend analysis, and reinforces the business case for spotlighting high-performing artist features regardless of catalog size.
+
 15. Average Popularity by Liveness (Binned)
 - Image: liveness_binned_avg_popularity.png
+  
 This bar chart presents the average track popularity across binned "liveness" scores, which estimate the presence of a live audience in a track. The popularity values remain relatively consistent across bins, with a subtle peak in the mid-liveness range (~0.1–0.13). This suggests that tracks perceived as moderately “live” may resonate slightly more with listeners, perhaps due to added energy or ambiance. However, extremes of low or high liveness don’t correlate strongly with popularity. This insight can inform decisions about production effects or live recording releases.
+
 16. Average Popularity by Loudness (Binned)
 - Image: loudness_binned_avg_popularity.png
+  
 This bar chart illustrates how average popularity changes across binned loudness values (in dB). The trend shows an increase in popularity from very quiet songs toward moderately loud ones (around 0.25–0.42 dB), after which popularity flattens and slightly decreases. This suggests that tracks with balanced loudness—not too soft or overly compressed—may perform better in terms of listener engagement. Useful for audio engineers and producers aiming for commercially viable mixes.
+
 17. Average Popularity by Mode (Binned)
 - Image: mode_binned_avg_popularity.png
+  
 This bar chart appears to show only a single aggregated bin, possibly due to preprocessing errors or imbalanced data between major (1) and minor (0) modes. With only one bin displayed, it's not possible to extract actionable differences in popularity between modes. It indicates the need for either data reprocessing or reassessment of this metric's variability across the dataset. Still, this highlights how categorical musical elements might need special handling in numeric visualizations.
+
 18. Distribution of Songs by Mood & Energy
 - Image: mood_energy_distribution.png
+  
 This horizontal bar chart categorizes songs into four combined mood/energy clusters: "Happy/High Energy," "Sad/Low Energy," "Energetic/Sad," and "Chill/Happy." The most prevalent segment is "Happy/High Energy," followed by “Sad/Low Energy.” This segmentation offers a high-level overview of the emotional and energetic diversity of the dataset. It is valuable for mood-based recommendation systems and playlist generators, guiding UX personalization strategies.
+
 19. Average Popularity by Speechiness (Binned)
 - Image: speechiness_binned_avg_popularity.png
+  
 This plot showcases the relationship between “speechiness” (a measure of spoken-word content) and average track popularity. The trend shows a mild downward curve, with highest popularity in low-speechiness ranges (~0.0–0.03), which aligns with standard musical tracks. Popularity dips as speechiness increases, reflecting how high speechiness (e.g., podcasts, spoken-word poetry) typically appeals to niche audiences. This has implications for genre classification and content targeting.
+
 20. Average Popularity by Track Duration (Minutes, Binned)
 - Image: duration_min_binned_avg_popularity.png
+  
 This bar chart bins track durations (in minutes) and examines their correlation with popularity. The most popular songs cluster around the 3.5 to 4-minute range, aligning with the typical radio-friendly length. Tracks that are too short or too long show a drop in average popularity. This reinforces existing industry norms and supports strategic editing for streaming optimization and listener retention.
+
 21. Average Popularity by Track Duration (Milliseconds, Binned)
 - Image: duration_ms_binned_avg_popularity.png
+  
 This visualization mirrors the previous one but offers greater precision in milliseconds. The same arc pattern appears, with popularity peaking in the mid-duration range (~210k–250k ms). This detail can be useful for algorithmic track trimming or segmentation strategies where exact timestamps matter—for instance, in audio previews, social media snippets, or music summarization tools.
+
 22. Average Popularity by Energy (Binned)
 - Image: energy_binned_avg_popularity.png
+  
 This chart highlights how average popularity varies across binned “energy” scores. The most popular tracks fall within the 0–0.5 energy range, peaking near moderate levels. High-energy tracks (above 1.0) tend to be less popular, suggesting listener preference for tracks that are dynamic yet not overly intense. Useful insight for production teams curating gym playlists, chill mixes, or studying genre-specific trends.
+
 23. Average Popularity by Instrumentalness (Binned)
 - Image: instrumentalness_binned_avg_popularity.png
+  
 This bar chart shows the inverse relationship between instrumentalness and popularity. Tracks with lower instrumentalness—meaning more vocals—tend to have higher average popularity, while fully instrumental songs see a drop. This suggests that vocals are a key driver of mass appeal in mainstream music, making this a crucial variable for both producers and recommendation systems.
+
 24. Average Popularity by Key (Binned)
 - Image: key_binned_avg_popularity.png
+  
 This chart examines the relationship between musical key and average popularity. While differences across key bins are subtle, there are slight peaks around certain keys (e.g., C and G). This could reflect the frequency of these keys in pop and mainstream production, possibly due to vocal comfort or instrument tuning. Although not a strong predictor of popularity, key distribution can inform harmonic mixing and automated DJ tools.
 25. Average Popularity by Tempo (Binned)
 - Image: tempo_binned_avg_popularity.png
+  
 This plot investigates how song tempo relates to popularity. Songs were binned by standardized tempo values, with the middle range (~0.82) achieving the highest average popularity. Extreme tempos, both fast and slow, show slight declines in popularity. This suggests that mid-tempo tracks may align better with mainstream listener preferences. This is a useful insight for producers aiming to optimize the tempo of new releases for broader appeal.
+
 26. Average Popularity by Time Signature (Binned)
 - Image: time_signature_binned_avg_popularity.png
+  
 This simple binned bar chart compares average popularity across different time signatures. Songs with uncommon time signatures (below 4/4) show slightly higher average popularity compared to standard 4/4 tracks. While the effect is subtle, it could suggest that rhythmically unique songs may stand out in the algorithmic and human listener environment. This insight can be explored further by niche or experimental artists.
+
 27. Top 20 Artists by Average Popularity (All Songs)
 - Image: top_artists_popularity.png
+  
 This horizontal bar chart highlights the top 20 artists by average popularity score, without filtering for a minimum number of tracks. This allows the inclusion of artists with just a few viral tracks or notable collaborations. The chart reflects how feature artists (e.g., Sam Smith & Kim Petras, Bad Bunny & Bomba Estéreo) can dominate popularity rankings through single releases rather than large catalogs. This supports the business case for highlighting top-performing track-level features in recommendation engines or collaboration decisions.
 
 
