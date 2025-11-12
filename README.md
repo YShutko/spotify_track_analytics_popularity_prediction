@@ -17,7 +17,13 @@
 
 ## 🚀 Quick Start
 
-### Run the Interactive Dashboard
+### 🌐 Try the Live Demo
+
+**No installation required!** Try the interactive dashboard now:
+
+**[🎵 Launch Spotify Track Analytics on Hugging Face Spaces](https://huggingface.co/spaces/jmbarlow/spotify-track-analytics)**
+
+### Run Locally
 
 **Option 1: Streamlit (recommended)**
 ```bash
@@ -39,7 +45,7 @@ python app_gradio.py
 ```
 Opens at http://localhost:7860
 
-Both dashboards provide:
+All dashboards provide:
 - 📊 **Data Explorer**: Browse and filter 114,000 tracks
 - 📈 **Rich Visualizations**: Interactive charts and insights
 - 🤖 **ML Model Analysis**: Feature importance and performance
