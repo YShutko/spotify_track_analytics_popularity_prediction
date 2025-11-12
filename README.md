@@ -85,46 +85,55 @@ time_signature: Musical meter (e.g. 4 = 4/4 time).
 track_genre: Musical genre classification of the track.
 
 ## Business Requirements & Solutions
-
-### 1. **Understand Key Drivers of Song Popularity** ✅
+1. **Understand Key Drivers of Song Popularity**
+   Stakeholders want to know which track features (e.g., genre, energy, length) drive popularity.
 **Solution**: XGBoost ML model with feature importance analysis
 - Interactive dashboard shows top 20 most important features
 - Genre is the strongest predictor (importance: 0.0986)
 - Track length, explicit content, and energy levels are significant
 - **Access**: ML Model tab in Streamlit dashboard
-
-### 2. **Classify Songs by Mood and Energy** ✅
+2. **Classify Songs by Mood and Energy**
+  The product team requires a system to categorize songs by mood for mood-based playlists.
 **Solution**: Automated mood/energy classification system
 - 4 mood categories: Happy/High Energy, Energetic/Sad, Chill/Happy, Sad/Low Energy
 - Based on valence (positivity) and energy scores
 - Visualized in interactive pie charts
 - **Access**: Visualizations tab → Mood & Energy section
-
-### 3. **Genre-Level Analysis** ✅
+3. **Genre-Level Analysis**
+  Marketing and analytics teams need insights into genre trends and performance.
 **Solution**: Comprehensive genre analytics and visualizations
 - 114 unique genres analyzed across 114,000 tracks
 - Top 20 genres by track count displayed
 - Genre-specific popularity trends
 - **Access**: Data Explorer + Visualizations tabs
-
-### 4. **Support Playlist Curation** ✅
+4. **Support Playlist Curation**
+  Users should be able to filter and find similar tracks for playlist creation.
 **Solution**: Advanced filtering and similarity search
 - Filter by genre, popularity range, and audio features
 - Download curated track lists as CSV
-- Find similar successful tracks in same genre
+- Find similar successful tracks in the same genre
 - **Access**: Data Explorer tab with multi-select filters
-
-### 5. **Data-Driven Music Recommendations** ✅
+5. **Data-Driven Music Recommendations**
+  Music producers need predictive tools for optimizing new track performance.
 **Solution**: AI-powered recommendation engine for track optimization
 - Predict popularity for new tracks (0-100 score)
 - Get up to 5 actionable recommendations to maximize audience
 - See potential impact of each change (+5 to +12 popularity points)
-- Compare against successful tracks in same genre
+- Compare against successful tracks in the same genre
 - **Access**: Track Predictor tab (music producer tool)
 
 
 ## Hypothesis
-
+1. Genre is a strong predictor of popularity.
+ Confirmed by: XGBoost feature importance — Genre ranked #1 (importance score: 0.0986).
+2 Songs with higher energy and valence are perceived as more positive/mood-lifting.
+Confirmed by: Mood classification into 4 quadrants using energy and valence; shown in mood pie chart.
+3. Explicit content and short track length tend to lower popularity.
+Confirmed by: Negative correlation in model feature importance scores and popularity predictions.
+4. Most popular genres have a wider spread of track counts and variability in popularity.
+Confirmed by: Genre distribution charts and popularity histograms in the Genre Analysis dashboard.
+5. Audio features can be used to accurately predict a track’s future popularity.
+Confirmed by: Model predictions (0–100 scale) with ~80% accuracy and test-set performance.
 
 ## Project Plan
 * Data Acquisition & Preparation
@@ -135,12 +144,12 @@ track_genre: Musical genre classification of the track.
   * Visualize relationships between key features using:
       * Correlation heatmaps
       * Pairplots and histograms
-* Interactive Streamlit Dashboard ✅
-  * **Completed**: Full-featured web application with 4 tabs:
-    * 📊 Data Explorer - Browse and filter tracks
-    * 📈 Visualizations - Rich, interactive charts
-    * 🤖 ML Model - Feature importance and performance
-    * 🎯 Track Predictor - Predict + optimize new tracks
+* Interactive Streamlit Dashboard 
+  * Full-featured web application with 4 tabs:
+    * Data Explorer - Browse and filter tracks
+    * Visualizations - Rich, interactive charts
+    * ML Model - Feature importance and performance
+    * Track Predictor - Predict + optimize new tracks
   * Real-time popularity predictions with AI recommendations
   * Music producer workflow for track optimization
     
@@ -148,12 +157,55 @@ track_genre: Musical genre classification of the track.
 
 
 ## Dashboard Design
-  
+### Streamlit Web Application
+Launch with: `streamlit run app.py`
+
+Tab 1: Data Explorer 
+* Browse 114,000 Spotify tracks
+* Filter by genre and popularity range
+* View track details (name, artists, audio features)
+* Download filtered data as CSV
+
+Tab 2: Visualizations 
+* **Popularity Distribution**: Histogram of track popularity scores
+* **Audio Features**: 6 feature distributions (danceability, energy, valence, etc.)
+* **Top 20 Genres**: Bar chart of most popular genres
+* **Mood & Energy**: Pie charts showing track classification
+* **Correlation Heatmap**: Feature relationships
+* **Interactive Scatter**: Custom X/Y axis selection with color coding
+
+Tab 3: ML Model 
+* **Model Performance Metrics**: R² = 0.39, RMSE = 17.4
+* **Top 20 Feature Importances**: Genre, track length, explicit content
+* **Prediction vs Actual**: Scatter plot visualization
+* **Residual Analysis**: Error distribution
+* **Complete Model Metadata**: JSON export of specifications
+
+Tab 4: Track Predictor 🎯
+For Music Producers: Interactive tool to predict and optimize track popularity
+**Input Methods**:
+  * Sliders (beginner-friendly with tooltips)
+  * Manual entry (advanced users)
+  * Random example (explore real tracks)
+**Features**:
+*  Set 14 audio characteristics (danceability, energy, tempo, etc.)
+* Get instant popularity prediction (0-100 score)
+* Receive up to 5 AI-powered recommendations
+* See potential impact (+5 to +12 popularity points)
+* Compare with successful tracks in same genre
+**Example Recommendations**:
+* "Increase danceability from 0.5 to 0.7 for +10 points"
+* "Boost energy with louder instruments for +8 points"
+* "Try major key for more uplifting feel (+6 points)"
+
+See [Streamlit App Guide](docs/streamlit_app_guide.md) for detailed usage instructions.
+
 ## Analysis techniques used
 * Visual Studio Code
 * Python
 * Jupyter notebook
 * ChatGPT
+* Claude
 
 ## Ethical consideration
 This project utilizes publicly available Spotify track data for the purpose of educational data analysis and machine learning model development. The following ethical aspects were taken into account:
