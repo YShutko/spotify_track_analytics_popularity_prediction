@@ -100,7 +100,7 @@ train: ## Run improved ML pipeline
 	@echo "🤖 Training model with improved pipeline..."
 	@python src/improved_ml_pipeline.py
 
-train-mlflow: ## Run improved ML pipeline with MLflow tracking
+train-mlflow: ## Run improved ML pipeline with MLflow tracking (real data)
 	@echo "🤖 Training model with MLflow tracking..."
 	@python src/improved_ml_pipeline_mlflow.py
 
