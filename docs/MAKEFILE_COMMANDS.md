@@ -81,6 +81,31 @@ Delete all MLflow experiments, runs, and artifacts (prompts for confirmation).
 make mlflow-clean
 ```
 
+### `make mlflow-reset`
+Reset corrupted MLflow database by deleting and recreating it.
+
+```bash
+make mlflow-reset
+```
+
+**What it does:**
+- Stops any running MLflow UI processes
+- Deletes corrupted database files (mlflow.db, mlflow.db-shm, mlflow.db-wal)
+- Recreates directory structure
+- Database will be created fresh on next start
+
+**When to use:**
+- MLflow UI fails to start with Alembic migration errors
+- Database reports "inconsistent state"
+- After upgrading MLflow version
+
+### `make mlflow-stop`
+Cleanly stop MLflow UI server and all worker processes.
+
+```bash
+make mlflow-stop
+```
+
 ---
 
 ## Training Commands
@@ -467,6 +492,25 @@ make prepare-data
 ```bash
 make train-mlflow
 ```
+
+### Issue: `make mlflow-ui` fails with Alembic migration error
+
+**Error message:**
+```
+ERROR mlflow.cli: Can't locate revision identified by 'bf29a5ff90ea'
+alembic.util.exc.CommandError: Can't locate revision...
+```
+
+**Cause:** Database corruption or MLflow version mismatch
+
+**Solution:** Reset the MLflow database:
+
+```bash
+make mlflow-reset
+make mlflow-ui
+```
+
+This will delete the corrupted database and create a fresh one on next start.
 
 ### Issue: `make lint` or `make format` not working
 
