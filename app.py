@@ -182,7 +182,7 @@ with tab1:
     st.dataframe(
         df_filtered[['track_name', 'artists', 'album_name', 'popularity',
                      'track_genre', 'danceability', 'energy', 'valence']].head(100),
-        use_container_width=True,
+        width='stretch',
         height=400
     )
 
@@ -212,7 +212,7 @@ with tab2:
         color_discrete_sequence=['#1DB954']
     )
     fig.update_layout(height=400, showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Audio Features
     st.markdown("### 🎼 Audio Feature Distributions")
@@ -232,7 +232,7 @@ with tab2:
         )
 
     fig.update_layout(height=600, title_text="Audio Features Distribution")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Genre Analysis
     st.markdown("### 🎸 Top 20 Genres by Track Count")
@@ -247,7 +247,7 @@ with tab2:
         color_continuous_scale='Greens'
     )
     fig.update_layout(height=600, showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Mood/Energy Analysis
     st.markdown("### 😊 Mood & Energy Classification")
@@ -261,7 +261,7 @@ with tab2:
             title='Mood Distribution',
             color_discrete_sequence=px.colors.sequential.Greens
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col2:
         energy_counts = df['energy_category'].value_counts()
@@ -271,7 +271,7 @@ with tab2:
             title='Energy Level Distribution',
             color_discrete_sequence=px.colors.sequential.Teal
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     # Correlation Heatmap
     st.markdown("### 🔥 Feature Correlation Heatmap")
@@ -289,7 +289,7 @@ with tab2:
         title='Audio Features Correlation Matrix'
     )
     fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Scatter plot
     st.markdown("### 📊 Interactive Scatter Plot")
@@ -311,7 +311,7 @@ with tab2:
         opacity=0.6
     )
     fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # ============================================================================
 # TAB 3: ML Model
@@ -345,7 +345,7 @@ with tab3:
     )
     fig.update_layout(height=600, showlegend=False)
     fig.update_yaxes(autorange="reversed")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Model Performance
     st.markdown("### 📈 Model Performance")
@@ -375,7 +375,7 @@ with tab3:
             )
         )
         fig.update_layout(height=400)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col2:
         # Residuals
@@ -388,7 +388,7 @@ with tab3:
             color_discrete_sequence=['#1DB954']
         )
         fig.update_layout(height=400, showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     # Model metadata
     with st.expander("📋 View Model Metadata"):
@@ -478,7 +478,7 @@ with tab4:
     st.markdown("---")
 
     # Predict button
-    if st.button("🚀 Predict Popularity", type="primary", use_container_width=True):
+    if st.button("🚀 Predict Popularity", type="primary", width='stretch'):
         # Prepare features
         duration_min = duration_ms / 60000
 
@@ -671,7 +671,7 @@ with tab4:
                 st.dataframe(
                     similar_tracks[['track_name', 'artists', 'popularity',
                                    'danceability', 'energy', 'valence']],
-                    use_container_width=True
+                    width='stretch'
                 )
             else:
                 st.info("No highly popular tracks found in this genre. Be a trendsetter! 🚀")
