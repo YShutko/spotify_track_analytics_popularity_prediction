@@ -110,6 +110,22 @@ test-pipeline: ## Test pipeline with synthetic data
 	@python src/improved_ml_pipeline.py
 	@echo "✅ Pipeline test complete!"
 
+tune: ## Run hyperparameter tuning with Optuna (50 trials, synthetic data)
+	@echo "🎯 Running hyperparameter tuning with Optuna..."
+	@python src/tune_hyperparameters.py --synthetic --trials 50
+
+tune-real: ## Run hyperparameter tuning with real data (50 trials)
+	@echo "🎯 Running hyperparameter tuning with real data..."
+	@python src/tune_hyperparameters.py --trials 50
+
+tune-quick: ## Quick tuning with 10 trials (synthetic data)
+	@echo "🎯 Quick hyperparameter tuning (10 trials)..."
+	@python src/tune_hyperparameters.py --synthetic --trials 10
+
+tune-extensive: ## Extensive tuning with 200 trials (real data)
+	@echo "🎯 Extensive hyperparameter tuning (200 trials)..."
+	@python src/tune_hyperparameters.py --trials 200
+
 ##@ Notebooks
 
 notebook: ## Start Jupyter notebook server
