@@ -1,39 +1,64 @@
-# Source Code Directory
+# Improved ML Pipeline - Implementation Guide
 
-This directory is intended for Python modules and reusable source code.
+This directory contains the improved ML pipeline implementation with all Phase 1 and Phase 2 enhancements from the specification document.
 
-## Planned Structure
+## Files
 
-```
-src/
-├── data_loader.py       # Data loading and validation utilities
-├── preprocessing.py     # Data cleaning and feature engineering
-├── features.py          # Feature extraction and transformation
-├── visualization.py     # Plotting and chart generation
-├── modeling.py          # ML model training and evaluation
-└── utils.py            # Helper functions
-```
+- **`ml_utils.py`**: Utility functions for data validation, metrics, and metadata tracking
+- **`improved_ml_pipeline.py`**: Complete ML pipeline with all improvements
+- **`__init__.py`**: Package initialization
 
-## Usage
+## Prerequisites
 
-Scripts in this directory should be importable from notebooks:
+### 1. Install Dependencies
 
-```python
-# From notebooks/
-import sys
-sys.path.append('../src')
-
-from data_loader import load_spotify_data
-from preprocessing import clean_data, create_mood_features
-
-# Load and process data
-df = load_spotify_data()
-df_clean = clean_data(df)
+```bash
+source .venv/bin/activate
+pip install -r requirements.txt
 ```
 
-## Development Notes
+### 2. Generate Cleaned Data
 
-- Keep functions modular and well-documented
-- Include type hints for better code clarity
-- Write unit tests for utility functions
-- Follow PEP 8 style guidelines
+Before running the improved pipeline, you need to generate the cleaned data:
+
+```bash
+# Run the EDA notebook to generate cleaned_music_data.csv
+jupyter notebook notebooks/Hackathon2Music.ipynb
+```
+
+The EDA notebook will:
+- Extract data from `data/dataset.csv.zip`
+- Clean and preprocess the data
+- Save `cleaned_music_data.csv` in the project root
+
+## Running the Improved Pipeline
+
+Once the cleaned data is available:
+
+```bash
+source .venv/bin/activate
+python src/improved_ml_pipeline.py
+```
+
+## What Gets Generated
+
+The pipeline will create the following outputs in the `outputs/` directory.
+
+See the full specification document for details: `dev_docs/ML_PIPELINE_IMPROVEMENTS_SPEC.md`
+
+## Improvements Implemented
+
+### Phase 1 (Critical)
+- Data validation
+- Separate validation set
+- SHAP values (CRITICAL)
+- Git commit tracking
+- Environment metadata
+
+### Phase 2 (Enhanced)
+- JSON configuration
+- Learning curves
+- Adjusted R²
+- Correlation heatmap
+- QQ plots
+
