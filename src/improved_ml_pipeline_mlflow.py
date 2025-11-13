@@ -129,7 +129,7 @@ dataset = mlflow.data.from_pandas(
     targets="popularity"
 )
 mlflow.log_input(dataset, context="training")
-print(f"✅ Dataset logged: {dataset.name} ({dataset.profile['num_rows']} rows, {dataset.profile['num_columns']} columns)")
+print(f"✅ Dataset logged: {dataset.name} ({len(df)} rows, {len(df.columns)} columns)")
 
 
 # ============================================================================

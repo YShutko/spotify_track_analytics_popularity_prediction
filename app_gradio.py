@@ -29,17 +29,61 @@ def load_ml_data():
     return X_test, y_test
 
 def load_model():
-    """Load trained model"""
-    model = joblib.load('outputs/models/xgboost_popularity_model.joblib')
-    with open('outputs/models/model_metadata.json', 'r') as f:
-        metadata = json.load(f)
-    feature_importance = pd.read_csv('outputs/models/feature_importance.csv')
+    """Load the latest trained model"""
+    import glob
+
+    # Find the latest model file
+    model_files = sorted(glob.glob('outputs/models/xgb_model_*.joblib'), reverse=True)
+    if not model_files:
+        # Fallback to old naming convention
+        model_files = ['outputs/models/xgboost_popularity_model.joblib']
+
+    latest_model = model_files[0]
+
+    # Find corresponding metadata file
+    timestamp = latest_model.split('_')[-1].replace('.joblib', '')
+    metadata_file = f'outputs/metadata/xgb_metadata_{timestamp}.json'
+
+    # Load model
+    model = joblib.load(latest_model)
+
+    # Load metadata if available
+    metadata = {}
+    if Path(metadata_file).exists():
+        with open(metadata_file, 'r') as f:
+            metadata = json.load(f)
+    elif Path('outputs/models/model_metadata.json').exists():
+        # Fallback to old location
+        with open('outputs/models/model_metadata.json', 'r') as f:
+            metadata = json.load(f)
+
+    # Load or create feature importance
+    feature_importance = None
+    if Path('outputs/models/feature_importance.csv').exists():
+        feature_importance = pd.read_csv('outputs/models/feature_importance.csv')
+    else:
+        # Create feature importance from model
+        if hasattr(model, 'feature_importances_'):
+            feature_names = metadata.get('feature_names', [f'feature_{i}' for i in range(len(model.feature_importances_))])
+            feature_importance = pd.DataFrame({
+                'feature': feature_names,
+                'importance': model.feature_importances_
+            }).sort_values('importance', ascending=False)
+
     return model, metadata, feature_importance
 
 # Load data globally
 df = load_data()
-X_test, y_test = load_ml_data()
+X_test_full, y_test = load_ml_data()
 model, metadata, feature_importance = load_model()
+# Filter and prepare test data to match model's expected features
+X_test = X_test_full[[col for col in model.feature_names_in_ if col in X_test_full.columns]].copy()
+# Add missing features with default values
+for col in model.feature_names_in_:
+    if col not in X_test.columns:
+        X_test[col] = 2020  # Default value for missing features like release_year
+# Ensure column order matches model's expectations
+X_test = X_test[model.feature_names_in_]
 
 # ============================================================================
 # Tab 1: Data Explorer Functions
