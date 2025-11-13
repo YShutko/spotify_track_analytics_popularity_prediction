@@ -14,6 +14,11 @@ from .ml_utils import (
     log_data_split_info
 )
 
+from .mlflow_tracker import (
+    MLflowTracker,
+    track_experiment
+)
+
 __all__ = [
     'validate_train_test_features',
     'check_missing_values',
@@ -23,5 +28,7 @@ __all__ = [
     'create_model_metadata',
     'save_model_with_metadata',
     'load_config',
-    'log_data_split_info'
+    'log_data_split_info',
+    'MLflowTracker',
+    'track_experiment'
 ]
