@@ -475,7 +475,7 @@ with tab3:
     # Calculate metrics on this sample
     from sklearn.metrics import r2_score, mean_squared_error, mean_absolute_error
     sample_r2 = r2_score(y_actual, y_pred)
-    sample_rmse = mean_squared_error(y_actual, y_pred, squared=False)
+    sample_rmse = np.sqrt(mean_squared_error(y_actual, y_pred))
     sample_mae = mean_absolute_error(y_actual, y_pred)
 
     # Show sample metrics
