@@ -134,3 +134,4 @@ exports/
 # Presentation artifacts (generated)
 presentation/screens/
 presentation/output/
+.cache
