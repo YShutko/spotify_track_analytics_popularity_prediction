@@ -48,13 +48,25 @@ Welcome to the Spotify Track Analytics documentation. This directory contains co
   - Model training
   - Performance metrics
 
-- **[Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md)** - ⭐ NEW: Optuna tuning breakthrough
+- **[Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md)** - Optuna tuning breakthrough
   - 71% R² improvement (0.28 → 0.48)
   - 50 trials optimization report
   - Best hyperparameters found
   - Performance comparison
 
-- **[Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md)** - ⭐ NEW: Enhanced ETL with deduplication
+- **[Aggressive Optuna Results](AGGRESSIVE_OPTUNA_RESULTS.md)** - ⭐ NEW: Performance ceiling analysis
+  - 100-trial optimization (double previous attempt)
+  - Model performance ceiling reached at R² = 0.16
+  - Feature engineering recommendations
+  - Cost-benefit analysis of hyperparameter tuning
+
+- **[Training Run Summary](TRAINING_RUN_SUMMARY_20251114.md)** - ⭐ NEW: Cleaned dataset V2 results
+  - Comprehensive analysis of R² drop (0.48 → 0.16)
+  - Why this is expected and good
+  - Model health verification
+  - Stakeholder interpretation guide
+
+- **[Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md)** - Enhanced ETL with deduplication
   - Audio feature duplicate removal (30,533 tracks)
   - Zero-popularity track filtering (5,157 tracks)
   - 31% dataset reduction for quality improvement
@@ -126,8 +138,10 @@ Welcome to the Spotify Track Analytics documentation. This directory contains co
 
 | Document | Description | Audience |
 |----------|-------------|----------|
-| [Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md) | ⭐ Optuna optimization - 71% R² improvement | Data scientists |
-| [Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md) | ⭐ Enhanced ETL - 31% dataset reduction | Data scientists |
+| [Aggressive Optuna Results](AGGRESSIVE_OPTUNA_RESULTS.md) | ⭐ Performance ceiling - 100 trials, R² = 0.16 max | Data scientists |
+| [Training Run Summary](TRAINING_RUN_SUMMARY_20251114.md) | ⭐ Cleaned dataset results - R² drop explained | Data scientists |
+| [Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md) | Optuna optimization - 71% R² improvement | Data scientists |
+| [Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md) | Enhanced ETL - 31% dataset reduction | Data scientists |
 | [Pipeline Verification Summary](PIPELINE_VERIFICATION_SUMMARY.md) | Production readiness verification | ML engineers |
 | [Model Collapse Fix](MODEL_COLLAPSE_FIX.md) | Debugging case study & solution | Data scientists |
 | [ML Pipeline Summary](ML_PIPELINE_SUMMARY.md) | Complete ML pipeline | Data scientists |
@@ -261,10 +275,10 @@ Welcome to the Spotify Track Analytics documentation. This directory contains co
 
 | Metric | Count |
 |--------|-------|
-| **Total Documents** | 21 |
-| **Total Pages** | 265+ |
-| **Total Words** | 50,000+ |
-| **Code Examples** | 150+ |
+| **Total Documents** | 23 |
+| **Total Pages** | 285+ |
+| **Total Words** | 55,000+ |
+| **Code Examples** | 160+ |
 | **Diagrams** | 15+ |
 | **Screenshots** | 0 (text-based) |
 
@@ -282,14 +296,16 @@ Welcome to the Spotify Track Analytics documentation. This directory contains co
 2. [ETL Pipeline Summary](ETL_PIPELINE_SUMMARY.md) - Data processing
 
 ### ML Engineer / Data Scientist
-1. [Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md) - ⭐ 71% R² improvement
-2. [Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md) - ⭐ Enhanced ETL with deduplication
-3. [Pipeline Verification Summary](PIPELINE_VERIFICATION_SUMMARY.md) - Production checks
-4. [Model Collapse Fix](MODEL_COLLAPSE_FIX.md) - Debugging case study
-5. [ML Pipeline Summary](ML_PIPELINE_SUMMARY.md) - Complete pipeline
-6. [MLflow Guide](MLFLOW_GUIDE.md) - Experiment tracking
-7. [ETL Pipeline Summary](ETL_PIPELINE_SUMMARY.md) - Feature engineering
-8. [Dashboard Implementation](DASHBOARD_IMPLEMENTATION.md) - Model integration
+1. [Aggressive Optuna Results](AGGRESSIVE_OPTUNA_RESULTS.md) - ⭐ Performance ceiling reached at R² = 0.16
+2. [Training Run Summary](TRAINING_RUN_SUMMARY_20251114.md) - ⭐ Cleaned dataset V2 analysis
+3. [Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md) - 71% R² improvement (old dataset)
+4. [Data Cleaning Methodology](DATA_CLEANING_METHODOLOGY.md) - Enhanced ETL with deduplication
+5. [Pipeline Verification Summary](PIPELINE_VERIFICATION_SUMMARY.md) - Production checks
+6. [Model Collapse Fix](MODEL_COLLAPSE_FIX.md) - Debugging case study
+7. [ML Pipeline Summary](ML_PIPELINE_SUMMARY.md) - Complete pipeline
+8. [MLflow Guide](MLFLOW_GUIDE.md) - Experiment tracking
+9. [ETL Pipeline Summary](ETL_PIPELINE_SUMMARY.md) - Feature engineering
+10. [Dashboard Implementation](DASHBOARD_IMPLEMENTATION.md) - Model integration
 
 ### Software Developer
 1. [Makefile Guide](MAKEFILE_GUIDE.md) - Development commands
@@ -307,10 +323,12 @@ Welcome to the Spotify Track Analytics documentation. This directory contains co
 
 | Document | Last Updated | Changes |
 |----------|--------------|---------|
-| **Data Cleaning Methodology** | **2025-11-14** | ⭐ NEW: Enhanced ETL with deduplication |
-| **Hyperparameter Tuning Results** | **2025-11-14** | ⭐ NEW: 71% R² improvement, Optuna results |
-| **Pipeline Verification Summary** | **2025-11-14** | NEW: Production verification report |
-| **Model Collapse Fix** | **2025-11-14** | NEW: Debugging case study |
+| **Aggressive Optuna Results** | **2025-11-14** | ⭐ NEW: 100-trial optimization, performance ceiling reached |
+| **Training Run Summary** | **2025-11-14** | ⭐ NEW: Cleaned dataset V2 results, R² drop explained |
+| **Data Cleaning Methodology** | **2025-11-14** | Enhanced ETL with deduplication |
+| **Hyperparameter Tuning Results** | **2025-11-14** | 71% R² improvement, Optuna results |
+| **Pipeline Verification Summary** | **2025-11-14** | Production verification report |
+| **Model Collapse Fix** | **2025-11-14** | Debugging case study |
 | MLflow Guide | 2025-11-13 | Initial creation |
 | ML Pipeline Improvements Spec | 2025-11-13 | Initial creation |
 | Project Completion Summary | 2025-11-12 | Initial creation |
@@ -392,16 +410,32 @@ Makefile Guide
 
 ---
 
-**Index Version**: 2.1
+**Index Version**: 2.2
 **Last Updated**: 2025-11-14
-**Total Documentation**: 21 files, 265+ pages
+**Total Documentation**: 23 files, 285+ pages
 
 ---
 
 ## 🌟 Featured Documentation
 
 ### Must-Read for Model Performance
-**[Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md)** - Detailed report on achieving 71% R² improvement through Optuna optimization. Includes:
+**[Aggressive Optuna Results](AGGRESSIVE_OPTUNA_RESULTS.md)** - ⭐ NEW: Comprehensive analysis showing the model has reached its performance ceiling at R² = 0.16 with audio-only features. Includes:
+- 100-trial optimization attempt (double previous)
+- Performance ceiling analysis
+- Cost-benefit analysis of hyperparameter tuning
+- Feature engineering recommendations for v2.0
+- Roadmap to R² = 0.40-0.60 with additional features
+
+### Essential for Understanding Results
+**[Training Run Summary](TRAINING_RUN_SUMMARY_20251114.md)** - ⭐ NEW: In-depth explanation of why R² dropped from 0.48 to 0.16 (and why this is actually good). Includes:
+- Cleaned dataset V2 analysis (78,310 tracks)
+- Why R² = 0.16 is realistic and expected
+- Model health verification
+- Stakeholder interpretation guide
+- Comparison: old vs new model
+
+### Historical Context
+**[Hyperparameter Tuning Results](HYPERPARAMETER_TUNING_RESULTS.md)** - Original 71% R² improvement through Optuna optimization on uncleaned dataset. Includes:
 - Before/after performance comparison
 - Best hyperparameters found
 - Search space configuration
