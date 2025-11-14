@@ -8,9 +8,11 @@
 
 ## Executive Summary
 
-We trained two baseline models (Linear Regression and Random Forest) on the cleaned, deduplicated dataset to establish performance benchmarks and validate that our tuned XGBoost model represents meaningful improvement over simpler approaches.
+We trained baseline models (Linear Regression and Random Forest) on the cleaned, deduplicated dataset to establish performance benchmarks. After discovering severe overfitting in default Random Forest, we applied Optuna hyperparameter tuning to optimize performance.
 
-**Key Finding:** XGBoost (tuned) achieves **23% better performance** than Random Forest and **165% better** than Linear Regression, confirming that hyperparameter tuning and gradient boosting provide substantial value for this prediction task.
+**Key Finding:** Random Forest (tuned with Optuna) achieves **R² = 0.1700**, outperforming XGBoost (R² = 0.1619) by **5%** and default Random Forest (R² = 0.1315) by **29%**. This demonstrates that hyperparameter tuning is MORE critical for Random Forest than previously recognized, and that properly tuned Random Forest can match or exceed gradient boosting performance.
+
+**Updated Best Model:** Random Forest (tuned) is now the top performer for audio-only features.
 
 ---
 
@@ -113,8 +115,49 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 - **Well-controlled overfitting** - Train R² = 0.36 vs Test R² = 0.16
 - Regularization (L1, L2, gamma) prevents extreme overfitting
 - Early stopping prevents training beyond useful point
-- **Lowest test RMSE (16.32) and MAE (13.14)** of all models
-- Represents the **ceiling for audio-only features**
+- Strong performance with audio-only features
+
+---
+
+## Model 4: Random Forest (Tuned with Optuna)
+
+### Description
+Random Forest with hyperparameters optimized via Optuna (50 trials). This model demonstrates the critical importance of hyperparameter tuning for tree-based ensembles.
+
+### Hyperparameters (Optimized)
+- **n_estimators:** 250 trees
+- **max_depth:** 18
+- **min_samples_split:** 15
+- **min_samples_leaf:** 5
+- **max_features:** 'sqrt'
+- **bootstrap:** True
+- **Optuna trials:** 50
+- **Optimization metric:** Validation R²
+
+### Performance Metrics
+
+| Dataset | R² | Adjusted R² | RMSE | MAE |
+|---------|--------|-------------|------|-----|
+| **Training** | 0.3316 | - | 14.69 | 11.85 |
+| **Validation** | 0.1703 | - | 16.31 | 13.01 |
+| **Test** | **0.1700** | **0.1693** | **16.25** | **13.05** |
+
+### Analysis
+- **BEST overall performance** - explains 17% of variance (vs XGBoost 16%)
+- **Excellent overfitting control** - Train R² = 0.33 vs Test R² = 0.17 (gap = 0.16)
+- **29% improvement over default Random Forest** (R² 0.1315 → 0.1700)
+- **5% better than XGBoost** (R² 0.1619 → 0.1700)
+- **Lowest test RMSE (16.25) and MAE (13.05)** of all models
+- Hyperparameter tuning reduced overfitting from 0.75 to 0.16
+- Demonstrates that Random Forest can match/exceed gradient boosting with proper tuning
+- New ceiling for audio-only features: **R² = 0.17**
+
+### Key Optimizations
+- **max_depth=18** (vs unlimited default) - Prevents overfitting
+- **min_samples_leaf=5** (vs 1 default) - Requires larger leaf nodes
+- **min_samples_split=15** (vs 2 default) - More conservative splitting
+- **max_features='sqrt'** - Reduces correlation between trees
+- **n_estimators=250** - Optimal balance of performance vs computation
 
 ---
 
@@ -125,8 +168,9 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 | Model | Test R² | Test RMSE | Test MAE | Overfitting Gap |
 |-------|---------|-----------|----------|-----------------|
 | **Linear Regression** | 0.0612 | 17.25 | 14.21 | None (0.01) |
-| **Random Forest** | 0.1315 | 16.59 | 13.25 | Severe (0.75) |
-| **XGBoost (tuned)** | **0.1619** | **16.32** | **13.14** | Controlled (0.20) |
+| **Random Forest (default)** | 0.1315 | 16.59 | 13.25 | Severe (0.75) |
+| **XGBoost (tuned)** | 0.1619 | 16.32 | 13.14 | Controlled (0.20) |
+| **Random Forest (tuned)** | **0.1700** | **16.25** | **13.05** | **Controlled (0.16)** |
 
 **Overfitting Gap** = Training R² - Test R²
 
@@ -134,8 +178,9 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 
 | Comparison | R² Improvement | RMSE Reduction | MAE Reduction |
 |------------|----------------|----------------|---------------|
-| **XGBoost vs Linear Regression** | +164.6% | -5.4% | -7.6% |
-| **XGBoost vs Random Forest** | +23.1% | -1.6% | -0.8% |
+| **RF (tuned) vs Linear Regression** | +177.8% | -5.8% | -8.2% |
+| **RF (tuned) vs RF (default)** | +29.3% | -2.0% | -1.5% |
+| **RF (tuned) vs XGBoost** | +5.0% | -0.4% | -0.7% |
 
 ---
 
@@ -145,19 +190,27 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 - R² = 0.06 proves popularity is NOT linearly related to audio features
 - Non-linear patterns (e.g., "sweet spot" loudness, tempo preferences) require tree-based models
 
-### 2. **Default Random Forest Overfits Dramatically**
-- 88% training accuracy vs 13% test accuracy
-- Default hyperparameters too permissive (unlimited depth, min_samples_leaf=1)
-- With tuning, Random Forest could likely reach ~0.14-0.15 R²
+### 2. **Hyperparameter Tuning is CRITICAL for Random Forest**
+- Default Random Forest: R² = 0.1315 with severe overfitting (gap = 0.75)
+- Tuned Random Forest: R² = 0.1700 with controlled overfitting (gap = 0.16)
+- **29% improvement demonstrates tuning is more important than algorithm choice**
+- Key optimizations: max_depth=18, min_samples_leaf=5, max_features='sqrt'
 
-### 3. **XGBoost Tuning Delivers Real Value**
+### 3. **Random Forest Can Match/Exceed Gradient Boosting**
+- Tuned Random Forest (R² = 0.1700) beats XGBoost (R² = 0.1619) by 5%
+- Challenges conventional wisdom that gradient boosting always outperforms Random Forest
+- With proper tuning, simpler ensemble methods remain competitive
+- Random Forest advantages: faster training, easier interpretation, fewer hyperparameters
+
+### 4. **XGBoost Still Strong but Not Dominant**
+- XGBoost achieves R² = 0.1619 (solid performance)
 - 23% improvement over untuned Random Forest
-- Regularization crucial for preventing overfitting
-- 500 trees + early stopping + learning_rate=0.013 = optimal configuration
+- Regularization (L1, L2, gamma) + early stopping prevent overfitting
+- May still be preferred for production due to robustness and ecosystem
 
-### 4. **All Models Hit ~0.16 R² Ceiling**
-- Even with perfect tuning, audio-only features explain max ~16% of variance
-- Remaining 84% driven by:
+### 5. **All Models Hit ~0.17 R² Ceiling**
+- Even with perfect tuning, audio-only features explain max ~17% of variance
+- Remaining 83% driven by:
   - **Artist fame** (followers, reputation)
   - **Marketing** (playlist placement, promotion)
   - **Social trends** (virality, memes, TikTok)
@@ -185,23 +238,38 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 
 ## Recommendations
 
-### 1. **Stick with XGBoost for Production**
-- Clear winner in test performance
-- Well-controlled overfitting
-- Hyperparameters optimized via rigorous tuning
+### 1. **Deploy Random Forest (Tuned) for Production**
+- **Best test performance:** R² = 0.1700 (beats XGBoost by 5%)
+- Excellent overfitting control (gap = 0.16)
+- Simpler than XGBoost: fewer hyperparameters, easier to interpret
+- Faster training than XGBoost (7 mins vs 14 mins with Optuna)
+- Hyperparameters optimized via rigorous 50-trial Optuna study
 
-### 2. **Add Non-Audio Features (Priority 1)**
-- Current models (all three) limited by audio-only features
-- **Expected R² with artist features:** 0.28-0.32 (+75-100% improvement)
+### 2. **Consider XGBoost as Alternative**
+- Strong performance: R² = 0.1619 (only 5% behind RF)
+- Mature ecosystem and widespread production use
+- May generalize better to new data domains
+- Choose if interpretability/training speed not critical
+
+### 3. **Add Non-Audio Features (Priority 1)**
+- Current models (all four) limited by audio-only features
+- **Expected R² with artist features:** 0.28-0.32 (+65-90% improvement)
 - In progress: Fetching artist metadata (followers, popularity, genres)
+- Artist features likely to benefit all model types
 
-### 3. **Consider Ensemble Stacking (Future Work)**
-- Combine Linear Regression + Random Forest + XGBoost predictions
+### 4. **Hyperparameter Tuning is Non-Negotiable**
+- Default Random Forest: R² = 0.1315
+- Tuned Random Forest: R² = 0.1700 (+29%)
+- **Never deploy tree-based models with default hyperparameters**
+- Use Optuna, GridSearchCV, or similar for systematic optimization
+
+### 5. **Consider Ensemble Stacking (Future Work)**
+- Combine Linear Regression + RF (default) + RF (tuned) + XGBoost predictions
 - May squeeze out another 1-2% R² improvement
 - Diminishing returns vs complexity increase
 
-### 4. **Linear Regression Still Has Value**
-- Fast training (instant vs 14 seconds for XGBoost)
+### 6. **Linear Regression Still Has Value**
+- Fast training (instant vs 7 minutes for RF)
 - Interpretable coefficients
 - Useful for quick sanity checks and feature selection
 
@@ -218,19 +286,24 @@ Gradient boosted trees with hyperparameters optimized via Optuna (50 trials). Th
 ## Next Steps
 
 1. ✅ **Baseline models trained and documented**
-2. 🔄 **Artist enrichment in progress** (2,620/28,859 artists fetched)
-3. ⏳ **Retrain XGBoost with artist features** (expected R² = 0.28-0.32)
-4. ⏳ **Compare audio-only vs audio+artist models**
-5. ⏳ **Update dashboards with best model**
+2. ✅ **Random Forest tuned with Optuna** - Achieved R² = 0.1700 (best model)
+3. 🔄 **Artist enrichment in progress** (2,620/28,859 artists fetched)
+4. ⏳ **Retrain Random Forest with artist features** (expected R² = 0.28-0.32)
+5. ⏳ **Compare audio-only vs audio+artist models**
+6. ⏳ **Update dashboards with tuned Random Forest model**
+7. ⏳ **Deploy Random Forest to production** (replace current XGBoost)
 
 ---
 
 ## Conclusion
 
-The baseline model comparison confirms:
-1. **Non-linear models are essential** - Linear Regression R² = 0.06 is inadequate
-2. **Hyperparameter tuning matters** - XGBoost outperforms default Random Forest by 23%
-3. **Audio-only features are limiting** - All models plateau at R² ≈ 0.16
-4. **Artist features are the path forward** - Expected to boost R² to 0.28-0.32
+The comprehensive model comparison reveals critical insights:
 
-Our tuned XGBoost model represents the **best possible performance with audio-only features**. To achieve higher accuracy, we must incorporate artist metadata, marketing signals, and temporal features.
+1. **Non-linear models are essential** - Linear Regression R² = 0.06 is inadequate
+2. **Hyperparameter tuning is MORE important than algorithm choice** - Tuned Random Forest (+29%) beats XGBoost by 5%
+3. **Random Forest can match/exceed gradient boosting** - With proper tuning, simpler methods remain competitive
+4. **Never use default hyperparameters** - Default RF (R² = 0.13) vs Tuned RF (R² = 0.17) shows massive gap
+5. **Audio-only features are limiting** - All models plateau at R² ≈ 0.17
+6. **Artist features are the path forward** - Expected to boost R² to 0.28-0.32
+
+**Production Recommendation:** Deploy the **tuned Random Forest model** (R² = 0.1700) as it achieves the best performance with audio-only features, trains faster than XGBoost, and has simpler hyperparameters. This represents the **ceiling for audio-only predictions** - further improvements require artist metadata, marketing signals, and temporal features.
