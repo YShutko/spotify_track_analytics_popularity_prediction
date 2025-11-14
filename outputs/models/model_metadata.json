@@ -1,72 +1,45 @@
 {
   "model_type": "XGBoost Regressor",
   "target_variable": "popularity",
-  "n_features": 37,
-  "n_train_samples": 91200,
-  "n_test_samples": 22800,
-  "training_date": "2025-11-12T01:42:20.910596",
-  "training_time_seconds": 0.8581891059875488,
+  "n_features": 9,
+  "n_train_samples": 640,
+  "n_test_samples": 200,
+  "training_date": "2025-11-14T10:49:58.993320",
   "hyperparameters": {
-    "n_estimators": 200,
-    "max_depth": 6,
-    "learning_rate": 0.1,
-    "subsample": 0.8,
-    "colsample_bytree": 0.8,
-    "min_child_weight": 3,
-    "gamma": 0.1
+    "max_depth": 3,
+    "min_child_weight": 5,
+    "learning_rate": 0.023050076661539402,
+    "n_estimators": 400,
+    "subsample": 0.9638702091632912,
+    "colsample_bytree": 0.9995549903628695,
+    "reg_alpha": 8.058360986958881e-06,
+    "reg_lambda": 4.7013902514429927e-07,
+    "gamma": 0.06806014919461083,
+    "objective": "reg:squarederror",
+    "random_state": 42,
+    "eval_metric": "rmse"
   },
   "performance": {
     "train": {
-      "rmse": 16.327122240440808,
-      "mae": 12.19322681427002,
-      "r2": 0.46525734663009644
+      "rmse": 3.5415827709857735,
+      "mae": 2.8185683177238987,
+      "r2": 0.9392675267706858
     },
     "test": {
-      "rmse": 17.375245895292387,
-      "mae": 13.004339218139648,
-      "r2": 0.3882251977920532
+      "rmse": 5.744624109455652,
+      "mae": 4.540265035329774,
+      "r2": 0.8584462642293629
     }
   },
-  "top_10_features": [
-    {
-      "feature": "track_genre_encoded",
-      "importance": 0.09863682836294174
-    },
-    {
-      "feature": "time_signature_4",
-      "importance": 0.061728205531835556
-    },
-    {
-      "feature": "is_long_track",
-      "importance": 0.054522156715393066
-    },
-    {
-      "feature": "explicit",
-      "importance": 0.048508189618587494
-    },
-    {
-      "feature": "energy_category_High Energy",
-      "importance": 0.03605889528989792
-    },
-    {
-      "feature": "acousticness",
-      "importance": 0.03426537290215492
-    },
-    {
-      "feature": "is_short_track",
-      "importance": 0.031661611050367355
-    },
-    {
-      "feature": "instrumentalness",
-      "importance": 0.029286207631230354
-    },
-    {
-      "feature": "energy_danceability",
-      "importance": 0.027626987546682358
-    },
-    {
-      "feature": "danceability_squared",
-      "importance": 0.02665294148027897
-    }
+  "feature_names": [
+    "danceability",
+    "energy",
+    "loudness",
+    "acousticness",
+    "tempo",
+    "valence",
+    "instrumentalness",
+    "duration_min",
+    "release_year"
   ]
 }

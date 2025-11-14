@@ -1,38 +1,10 @@
 feature,importance
-track_genre_encoded,0.09863683
-time_signature_4,0.061728206
-is_long_track,0.054522157
-explicit,0.04850819
-energy_category_High Energy,0.036058895
-acousticness,0.034265373
-is_short_track,0.03166161
-instrumentalness,0.029286208
-energy_danceability,0.027626988
-danceability_squared,0.026652941
-loudness,0.026561093
-energy_squared,0.026048968
-valence_squared,0.02601144
-duration_ms,0.025587436
-energy_category_Medium Energy,0.024426136
-duration_min,0.024385624
-mood_energy_Sad/Low Energy,0.024080947
-valence,0.023715572
-danceability,0.023569724
-energy,0.02301381
-speechiness,0.02283136
-mood_energy_Happy/High Energy,0.022196794
-tempo_category_Fast,0.020979913
-low_energy_sad,0.020581776
-valence_energy,0.020216184
-tempo,0.020072922
-time_signature_1,0.020020159
-acousticness_energy,0.019332232
-liveness,0.01874394
-mood_energy_Energetic/Sad,0.018519452
-mode_1,0.017824672
-tempo_category_Moderate,0.017753633
-tempo_category_Very Fast,0.017033644
-key,0.014452267
-high_energy_happy,0.01404087
-time_signature_3,0.010571109
-time_signature_5,0.008480971
+energy,0.4231918
+danceability,0.3018071
+valence,0.18692811
+release_year,0.016098734
+duration_min,0.015821291
+tempo,0.015140917
+instrumentalness,0.014442218
+loudness,0.014352726
+acousticness,0.012217226
