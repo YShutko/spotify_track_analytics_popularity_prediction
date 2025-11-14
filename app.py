@@ -1004,7 +1004,7 @@ with tab4:
 
         # Cache SHAP computation for performance
         @st.cache_data
-        def compute_shap_values(_rf_rf_model, X_sample):
+        def compute_shap_values(_model, X_sample):
             """Compute SHAP values for a sample of data"""
             # Use TreeExplainer for Random Forest
             explainer = shap.TreeExplainer(_model)
@@ -1019,7 +1019,7 @@ with tab4:
         X_shap_sample = X_shap[:shap_sample_size]
 
         with st.spinner("Computing SHAP values... This may take a moment."):
-            shap_values, base_value = compute_shap_values(rf_rf_model, X_shap_sample)
+            shap_values, base_value = compute_shap_values(rf_model, X_shap_sample)
 
         # SHAP Summary Plot (Beeswarm)
         st.markdown("#### Feature Impact Distribution")
