@@ -156,6 +156,7 @@ def objective(trial):
         'eval_metric': 'rmse',
         'random_state': RANDOM_STATE,
         'n_jobs': -1,
+        'early_stopping_rounds': 50,
 
         # Tunable hyperparameters
         'max_depth': trial.suggest_int('max_depth', 3, 10),
@@ -173,7 +174,6 @@ def objective(trial):
     model.fit(
         X_train, y_train,
         eval_set=[(X_val, y_val)],
-        early_stopping_rounds=50,
         verbose=False
     )
 
@@ -206,6 +206,7 @@ final_params = {
     'eval_metric': 'rmse',
     'random_state': RANDOM_STATE,
     'n_jobs': -1,
+    'early_stopping_rounds': 50,
     **best_params
 }
 
@@ -214,7 +215,6 @@ model = XGBRegressor(**final_params)
 model.fit(
     X_train, y_train,
     eval_set=[(X_train, y_train), (X_val, y_val), (X_test, y_test)],
-    early_stopping_rounds=50,
     verbose=10
 )
 

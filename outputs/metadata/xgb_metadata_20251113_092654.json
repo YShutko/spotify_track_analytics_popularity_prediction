@@ -1,0 +1,64 @@
+{
+  "timestamp": "2025-11-13T09:26:54.923314",
+  "git_commit": "20a19ffeda6be34fb7a39692dc90252303bb303b",
+  "environment": {
+    "python_version": "3.12.11 (main, Sep 19 2025, 02:30:54) [Clang 17.0.0 (clang-1700.3.19.1)]",
+    "platform": "macOS-26.2-arm64-arm-64bit",
+    "numpy_version": "2.1.3",
+    "pandas_version": "2.3.3",
+    "scikit_learn_version": "1.7.2",
+    "xgboost_version": "2.1.4",
+    "shap_version": "0.50.0"
+  },
+  "model_params": {
+    "max_depth": 6,
+    "learning_rate": 0.1,
+    "n_estimators": 200,
+    "objective": "reg:squarederror",
+    "random_state": 42,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "min_child_weight": 1,
+    "gamma": 0,
+    "reg_alpha": 0,
+    "reg_lambda": 1,
+    "eval_metric": "rmse"
+  },
+  "metrics": {
+    "train_rmse": 0.22763353436641373,
+    "val_rmse": 6.167644436754155,
+    "test_rmse": 6.016859009329337,
+    "train_mae": 0.16083807082889356,
+    "val_mae": 4.809915632488467,
+    "test_mae": 4.674497981101179,
+    "train_r2": 0.9997491011573304,
+    "val_r2": 0.7926260661410279,
+    "test_r2": 0.8447120444827785,
+    "test_adjusted_r2": 0.8373562992214364,
+    "val_adjusted_r2": 0.7801836301094895
+  },
+  "features": {
+    "names": [
+      "danceability",
+      "energy",
+      "loudness",
+      "acousticness",
+      "tempo",
+      "valence",
+      "instrumentalness",
+      "duration_min",
+      "release_year"
+    ],
+    "count": 9
+  },
+  "data_shapes": {
+    "train": [
+      640,
+      9
+    ],
+    "test": [
+      200,
+      9
+    ]
+  }
+}

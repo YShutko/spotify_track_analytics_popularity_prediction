@@ -1,5 +1,5 @@
 {
-  "timestamp": "2025-11-14T12:37:56.010617",
+  "timestamp": "2025-11-14T12:59:32.311396",
   "dataset": "full_spotify_114k",
   "n_samples": 114000,
   "n_features": 9,
@@ -15,30 +15,32 @@
     "tempo"
   ],
   "model_params": {
-    "max_depth": 6,
-    "learning_rate": 0.1,
-    "n_estimators": 200,
-    "min_child_weight": 3,
-    "subsample": 0.8,
-    "colsample_bytree": 0.8,
-    "reg_alpha": 0.1,
-    "reg_lambda": 1.0,
-    "gamma": 0.1,
     "objective": "reg:squarederror",
+    "eval_metric": "rmse",
     "random_state": 42,
-    "n_jobs": -1
+    "n_jobs": -1,
+    "early_stopping_rounds": 50,
+    "max_depth": 10,
+    "learning_rate": 0.06885907419339467,
+    "n_estimators": 450,
+    "min_child_weight": 2,
+    "subsample": 0.7159916066260988,
+    "colsample_bytree": 0.8381031715240354,
+    "reg_alpha": 0.0005451148158426499,
+    "reg_lambda": 5.922287189195652e-05,
+    "gamma": 5.775230154117669e-07
   },
   "metrics": {
-    "train_r2": 0.307218074798584,
-    "train_rmse": 18.58665338575052,
-    "train_mae": 15.011823654174805,
-    "val_r2": 0.2126528024673462,
-    "val_rmse": 19.73647801541919,
-    "val_mae": 15.959294319152832,
-    "test_r2": 0.21574527025222778,
-    "test_adjusted_r2": 0.21533226308033016,
-    "test_rmse": 19.70069312410892,
-    "test_mae": 15.9951810836792
+    "train_r2": 0.8514921069145203,
+    "train_rmse": 8.596586889710576,
+    "train_mae": 6.0128092765808105,
+    "val_r2": 0.47230201959609985,
+    "val_rmse": 16.264706573794705,
+    "val_mae": 12.066926956176758,
+    "test_r2": 0.4772040843963623,
+    "test_adjusted_r2": 0.47692876764736103,
+    "test_rmse": 16.055638848029666,
+    "test_mae": 11.948029518127441
   },
   "data_shapes": {
     "train": [
