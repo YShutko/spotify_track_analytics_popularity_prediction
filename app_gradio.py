@@ -23,10 +23,25 @@ def load_data():
     return df
 
 def load_ml_data():
-    """Load ML-ready data"""
-    X_test = pd.read_parquet('data/processed/X_test.parquet')
-    y_test = pd.read_parquet('data/processed/y_test.parquet').squeeze()
-    return X_test, y_test
+    """Load ML-ready data - use full dataset for consistency"""
+    df = pd.read_parquet('data/processed/cleaned_spotify_data.parquet')
+
+    _, metadata, _ = load_model()
+    feature_cols = metadata.get('feature_names', [])
+
+    if not feature_cols:
+        feature_cols = ['danceability', 'energy', 'loudness', 'speechiness',
+                       'acousticness', 'instrumentalness', 'liveness', 'valence', 'tempo']
+
+    X = df[feature_cols].copy()
+    y = df['popularity'].copy()
+
+    # Remove NaN values
+    mask = ~(X.isnull().any(axis=1) | y.isnull())
+    X, y = X[mask], y[mask]
+
+    # Sample for performance (use 5000 samples)
+    return X.iloc[:5000], y.iloc[:5000]
 
 def load_model():
     """Load the latest trained model"""
@@ -74,16 +89,8 @@ def load_model():
 
 # Load data globally
 df = load_data()
-X_test_full, y_test = load_ml_data()
 model, metadata, feature_importance = load_model()
-# Filter and prepare test data to match model's expected features
-X_test = X_test_full[[col for col in model.feature_names_in_ if col in X_test_full.columns]].copy()
-# Add missing features with default values
-for col in model.feature_names_in_:
-    if col not in X_test.columns:
-        X_test[col] = 2020  # Default value for missing features like release_year
-# Ensure column order matches model's expectations
-X_test = X_test[model.feature_names_in_]
+X_test, y_test = load_ml_data()
 
 # ============================================================================
 # Tab 1: Data Explorer Functions
@@ -230,24 +237,54 @@ def create_genre_popularity():
 
 def get_model_info():
     """Get model metadata and performance"""
+    # Handle both old and new metadata formats
+    metrics = metadata.get('metrics', metadata.get('performance', {}).get('test', {}))
+    params = metadata.get('model_params', metadata.get('hyperparameters', {}))
+    data_shapes = metadata.get('data_shapes', {})
+
+    # Extract metrics with fallbacks
+    r2 = metrics.get('test_r2', metrics.get('r2', 0))
+    rmse = metrics.get('test_rmse', metrics.get('rmse', 0))
+    mae = metrics.get('test_mae', metrics.get('mae', 0))
+
+    # Extract training details
+    n_samples = metadata.get('n_samples', 'N/A')
+    n_features = metadata.get('n_features', len(model.feature_names_in_))
+    train_samples = data_shapes.get('train', [metadata.get('n_train_samples', 'N/A')])[0] if data_shapes else metadata.get('n_train_samples', 'N/A')
+    test_samples = data_shapes.get('test', [metadata.get('n_test_samples', 'N/A')])[0] if data_shapes else metadata.get('n_test_samples', 'N/A')
+
+    # Extract hyperparameters
+    n_estimators = params.get('n_estimators', 'N/A')
+    max_depth = params.get('max_depth', 'N/A')
+    learning_rate = params.get('learning_rate', 'N/A')
+
+    # Format numeric values safely
+    n_samples_str = f"{n_samples:,}" if isinstance(n_samples, int) else str(n_samples)
+    train_samples_str = f"{train_samples:,}" if isinstance(train_samples, int) else str(train_samples)
+    test_samples_str = f"{test_samples:,}" if isinstance(test_samples, int) else str(test_samples)
+
     info = f"""
     ### 🤖 XGBoost Model Information
 
     **Model Performance:**
-    - R² Score: {metadata['performance']['test']['r2']:.4f}
-    - RMSE: {metadata['performance']['test']['rmse']:.2f}
-    - MAE: {metadata['performance']['test']['mae']:.2f}
+    - R² Score: {r2:.4f}
+    - RMSE: {rmse:.2f}
+    - MAE: {mae:.2f}
 
     **Training Details:**
-    - Training Samples: {metadata['n_train_samples']:,}
-    - Test Samples: {metadata['n_test_samples']:,}
-    - Total Features: {metadata['n_features']}
-    - Model: {metadata['model_type']}
+    - Total Samples: {n_samples_str} tracks
+    - Train Samples: {train_samples_str}
+    - Test Samples: {test_samples_str}
+    - Features Used: {n_features}
+    - Model Type: XGBoost Regressor
 
     **Hyperparameters:**
-    - Estimators: {metadata['hyperparameters']['n_estimators']}
-    - Max Depth: {metadata['hyperparameters']['max_depth']}
-    - Learning Rate: {metadata['hyperparameters']['learning_rate']}
+    - Estimators: {n_estimators}
+    - Max Depth: {max_depth}
+    - Learning Rate: {learning_rate}
+
+    **Note:** Model trained on full 114K dataset with 9 core audio features.
+    R² = {r2:.4f} represents the portion of popularity explained by audio features alone.
     """
     return info
 
@@ -469,19 +506,36 @@ def predict_popularity(danceability, energy, key, loudness, mode, speechiness,
     genre_encoded = hash(genre) % 100 / 100.0
     feature_vector['track_genre_encoded'] = [genre_encoded]
 
-    # Filter to only include features the model expects
-    feature_vector_model = feature_vector[[col for col in model.feature_names_in_ if col in feature_vector.columns]].copy()
+    # Use only the features that the model was trained on
+    # For the new model (9 features), we'll use a simplified approach
+    model_features = model.feature_names_in_
 
-    # Add missing features with appropriate default values
-    for col in model.feature_names_in_:
-        if col not in feature_vector_model.columns:
-            if col == 'release_year':
-                feature_vector_model[col] = [2020]  # Default year for missing release_year
-            else:
-                feature_vector_model[col] = [0]  # Default to 0 for other missing features
+    # Create a simple feature vector with just the 9 core features if that's what model expects
+    if len(model_features) == 9 and 'release_year' not in model_features:
+        # New model with 9 audio features only
+        feature_vector_model = pd.DataFrame({
+            'danceability': [danceability],
+            'energy': [energy],
+            'loudness': [loudness],
+            'speechiness': [speechiness],
+            'acousticness': [acousticness],
+            'instrumentalness': [instrumentalness],
+            'liveness': [liveness],
+            'valence': [valence],
+            'tempo': [tempo]
+        })
+    else:
+        # Old model with many engineered features
+        # Filter to only include features the model expects
+        feature_vector_model = feature_vector[[col for col in model_features if col in feature_vector.columns]].copy()
 
-    # Ensure column order matches model's expectations
-    feature_vector_model = feature_vector_model[model.feature_names_in_]
+        # Add missing features with appropriate default values
+        for col in model_features:
+            if col not in feature_vector_model.columns:
+                feature_vector_model[col] = [0]
+
+        # Ensure column order matches model's expectations
+        feature_vector_model = feature_vector_model[model_features]
 
     # Make prediction
     prediction = model.predict(feature_vector_model)[0]
@@ -640,9 +694,12 @@ with gr.Blocks(css=custom_css, title="Spotify Track Analytics", theme=gr.themes.
 
             with gr.Accordion("🎯 Model Predictions", open=False):
                 predictions_plot = gr.Plot(value=create_predictions_scatter())
-                gr.Markdown("""
+                # Get current metrics for note
+                current_r2 = metadata.get('metrics', {}).get('test_r2',
+                            metadata.get('performance', {}).get('test', {}).get('r2', 0.28))
+                gr.Markdown(f"""
                 **Note:** Points closer to the red diagonal line indicate better predictions.
-                The model achieves an R² score of 0.86, explaining 86% of popularity variance.
+                The model achieves an R² score of {current_r2:.4f}, explaining {current_r2*100:.1f}% of popularity variance from audio features.
                 """)
 
         # ====================================================================
@@ -724,10 +781,17 @@ with gr.Blocks(css=custom_css, title="Spotify Track Analytics", theme=gr.themes.
                         duration_ms, time_signature, genre]
             )
 
-    # Footer
-    gr.Markdown("""
+    # Footer with dynamic metrics
+    metrics = metadata.get('metrics', metadata.get('performance', {}).get('test', {}))
+    footer_r2 = metrics.get('test_r2', metrics.get('r2', 0))
+    footer_adj_r2 = metrics.get('test_adjusted_r2', metrics.get('adjusted_r2', 0))
+    footer_rmse = metrics.get('test_rmse', metrics.get('rmse', 0))
+    footer_mae = metrics.get('test_mae', metrics.get('mae', 0))
+    footer_n_samples = metadata.get('n_samples', 114000)
+
+    gr.Markdown(f"""
     ---
-    **Model Info:** XGBoost Regressor | R² = 0.86 | Adjusted R² = 0.85 | RMSE = 5.74 | MAE = 4.54 | Dataset: 114,000 tracks
+    **Model Info:** XGBoost Regressor | R² = {footer_r2:.4f} | Adjusted R² = {footer_adj_r2:.4f} | RMSE = {footer_rmse:.2f} | MAE = {footer_mae:.2f} | Dataset: {footer_n_samples:,} tracks
     """)
 
 # Launch the app
