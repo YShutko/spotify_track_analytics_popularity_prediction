@@ -286,7 +286,8 @@ def get_model_info():
     - Max Depth: {max_depth}
     - Learning Rate: {learning_rate}
 
-    **Note:** Model trained on full 114K dataset with 9 core audio features.
+    **Note:** Model trained on cleaned dataset ({n_samples_str} tracks) with 9 core audio features.
+    Dataset V2: Deduplicated, zero-popularity removed for higher quality predictions.
     R² = {r2:.4f} represents the portion of popularity explained by audio features alone.
     """
     return info
@@ -621,9 +622,11 @@ custom_css = """
 with gr.Blocks(css=custom_css, title="Spotify Track Analytics", theme=gr.themes.Soft()) as demo:
 
     # Header
-    gr.Markdown("""
+    header_n_samples = metadata.get('n_samples', len(df))
+    gr.Markdown(f"""
     # 🎵 Spotify Track Analytics Dashboard
-    ### Explore 114,000 tracks and predict popularity using machine learning
+    ### Explore {header_n_samples:,} cleaned tracks and predict popularity using machine learning
+    **Dataset V2:** Deduplicated, zero-popularity removed | Current R² = {metadata.get('metrics', {}).get('test_r2', 0.16):.4f}
     """)
 
     # Tabs
@@ -792,11 +795,13 @@ with gr.Blocks(css=custom_css, title="Spotify Track Analytics", theme=gr.themes.
     footer_adj_r2 = metrics.get('test_adjusted_r2', metrics.get('adjusted_r2', 0))
     footer_rmse = metrics.get('test_rmse', metrics.get('rmse', 0))
     footer_mae = metrics.get('test_mae', metrics.get('mae', 0))
-    footer_n_samples = metadata.get('n_samples', 114000)
+    footer_n_samples = metadata.get('n_samples', len(df))
 
     gr.Markdown(f"""
     ---
-    **Model Info:** XGBoost Regressor | R² = {footer_r2:.4f} | Adjusted R² = {footer_adj_r2:.4f} | RMSE = {footer_rmse:.2f} | MAE = {footer_mae:.2f} | Dataset: {footer_n_samples:,} tracks
+    **Model Info:** XGBoost Regressor | R² = {footer_r2:.4f} | Adjusted R² = {footer_adj_r2:.4f} | RMSE = {footer_rmse:.2f} | MAE = {footer_mae:.2f}
+
+    **Dataset:** {footer_n_samples:,} cleaned tracks (V2: Deduplicated, zero-popularity removed) | **Features:** Audio-only (9 features)
     """)
 
 # Launch the app

@@ -502,9 +502,10 @@ with tab3:
 
     # Model Performance
     st.markdown("### 📈 Model Performance on Full Dataset")
-    st.markdown("""
-    Below are predictions on a sample of the full Spotify dataset (114K tracks).
-    The model was trained on optimized features and tuned with Optuna for best performance.
+    n_samples_display = metadata.get('n_samples', len(df))
+    st.markdown(f"""
+    Below are predictions on a sample of the full Spotify dataset ({n_samples_display:,} cleaned tracks).
+    The model was trained on deduplicated data with optimized hyperparameters from Optuna.
     """)
 
     X_test, y_test = load_ml_data()
@@ -1001,9 +1002,11 @@ with tab4:
 
 # Footer
 st.markdown("---")
+footer_n_samples = metadata.get('n_samples', len(df))
 st.markdown(f"""
 <div style='text-align: center; color: #666;'>
     <p>🎵 Spotify Track Analytics Dashboard | Built with Streamlit & XGBoost</p>
-    <p>Data: 114,000 tracks from Kaggle | Model R² = {test_r2:.4f} | RMSE = {test_rmse:.2f}</p>
+    <p>Data: {footer_n_samples:,} cleaned tracks | Model R² = {test_r2:.4f} | RMSE = {test_rmse:.2f} | MAE = {test_mae:.2f}</p>
+    <p style='font-size: 0.9em;'>Dataset V2: Deduplicated, zero-popularity removed | Audio-only features</p>
 </div>
 """, unsafe_allow_html=True)
