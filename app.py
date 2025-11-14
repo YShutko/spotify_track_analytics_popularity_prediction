@@ -106,7 +106,7 @@ def load_data():
 
 @st.cache_data
 def load_ml_data():
-    """Load ML-ready data - use full dataset for consistency"""
+    """Load ML-ready data - use randomized sample from full dataset"""
     # Load the full dataset and prepare features
     df = pd.read_parquet('data/processed/cleaned_spotify_data.parquet')
 
@@ -126,8 +126,11 @@ def load_ml_data():
     mask = ~(X.isnull().any(axis=1) | y.isnull())
     X, y = X[mask], y[mask]
 
-    # Use a sample for performance (first 5000 rows)
-    return X.iloc[:5000], y.iloc[:5000]
+    # Use RANDOMIZED sample for performance (to avoid sorted data bias)
+    # Dataset is sorted by popularity, so we must shuffle!
+    sample_size = min(5000, len(X))
+    indices = np.random.RandomState(42).permutation(len(X))[:sample_size]
+    return X.iloc[indices], y.iloc[indices]
 
 @st.cache_resource
 def load_model():
@@ -190,8 +193,10 @@ with st.sidebar:
     test_rmse = metadata.get('metrics', {}).get('test_rmse', 0)
     test_mae = metadata.get('metrics', {}).get('test_mae', 0)
 
+    n_samples = metadata.get('n_samples', len(df))
+
     st.info(f"""
-    Explore 114,000 Spotify tracks and predict popularity using machine learning.
+    Explore {n_samples:,} cleaned Spotify tracks and predict popularity using machine learning.
 
     **Model Performance:**
     - R² Score: {test_r2:.4f}
@@ -199,7 +204,7 @@ with st.sidebar:
     - RMSE: {test_rmse:.2f}
     - MAE: {test_mae:.2f}
 
-    *Trained on 114K real tracks*
+    *Trained on {n_samples:,} tracks (cleaned dataset v2)*
     """)
     st.markdown("---")
     st.markdown("### Quick Stats")
@@ -550,17 +555,154 @@ with tab3:
         st.plotly_chart(fig, width='stretch')
 
     with col2:
-        # Residuals
+        # Residuals histogram
         residuals = y_actual - y_pred
         fig = px.histogram(
             residuals,
             nbins=50,
-            title='Prediction Errors (Residuals)',
+            title='Prediction Errors Distribution',
             labels={'value': 'Residual (Actual - Predicted)', 'count': 'Frequency'},
             color_discrete_sequence=['#1DB954']
         )
+        # Add mean line
+        fig.add_vline(x=residuals.mean(), line_dash="dash", line_color="red",
+                     annotation_text=f"Mean: {residuals.mean():.2f}")
         fig.update_layout(height=400, showlegend=False)
         st.plotly_chart(fig, width='stretch')
+
+    # Additional performance visualizations
+    st.markdown("### 🔍 Advanced Model Diagnostics")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Residual plot (residuals vs predicted)
+        fig = px.scatter(
+            x=y_pred,
+            y=residuals,
+            labels={'x': 'Predicted Popularity', 'y': 'Residual (Actual - Predicted)'},
+            title='Residual Plot',
+            opacity=0.5,
+            color_discrete_sequence=['#1DB954']
+        )
+        # Add zero line
+        fig.add_hline(y=0, line_dash="dash", line_color="red",
+                     annotation_text="Zero Error")
+        fig.update_layout(height=400)
+        st.plotly_chart(fig, width='stretch')
+
+        st.caption("""
+        **Residual Plot Interpretation:**
+        - Points should scatter randomly around zero line
+        - Patterns indicate model bias or heteroscedasticity
+        - Fan shapes suggest varying error across popularity range
+        """)
+
+    with col2:
+        # Error by popularity ranges
+        popularity_bins = pd.cut(y_actual, bins=[0, 20, 40, 60, 80, 100],
+                                labels=['Very Low (0-20)', 'Low (20-40)', 'Medium (40-60)',
+                                       'High (60-80)', 'Very High (80-100)'])
+        error_df = pd.DataFrame({
+            'Popularity Range': popularity_bins,
+            'Absolute Error': np.abs(residuals)
+        })
+
+        fig = px.box(
+            error_df,
+            x='Popularity Range',
+            y='Absolute Error',
+            title='Model Error by Popularity Range',
+            labels={'Absolute Error': 'Absolute Error (points)'},
+            color='Popularity Range',
+            color_discrete_sequence=px.colors.sequential.Greens
+        )
+        fig.update_layout(height=400, showlegend=False)
+        st.plotly_chart(fig, width='stretch')
+
+        st.caption("""
+        **Error Distribution Analysis:**
+        - Shows where the model performs best/worst
+        - Lower boxes indicate better prediction accuracy
+        - Helps identify if model struggles with specific popularity ranges
+        """)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        # Actual distribution
+        fig = px.histogram(
+            y_actual,
+            nbins=30,
+            title='Actual Popularity Distribution',
+            labels={'value': 'Popularity', 'count': 'Frequency'},
+            color_discrete_sequence=['#1DB954']
+        )
+        fig.add_vline(x=y_actual.mean(), line_dash="dash", line_color="red",
+                     annotation_text=f"Mean: {y_actual.mean():.1f}")
+        fig.update_layout(height=400, showlegend=False)
+        st.plotly_chart(fig, width='stretch')
+
+    with col2:
+        # Predicted distribution
+        fig = px.histogram(
+            y_pred,
+            nbins=30,
+            title='Predicted Popularity Distribution',
+            labels={'value': 'Popularity', 'count': 'Frequency'},
+            color_discrete_sequence=['#66BB6A']
+        )
+        fig.add_vline(x=y_pred.mean(), line_dash="dash", line_color="red",
+                     annotation_text=f"Mean: {y_pred.mean():.1f}")
+        fig.update_layout(height=400, showlegend=False)
+        st.plotly_chart(fig, width='stretch')
+
+    # Model insights
+    st.markdown("### 💡 Model Performance Insights")
+
+    # Calculate additional metrics
+    over_predictions = np.sum(y_pred > y_actual)
+    under_predictions = np.sum(y_pred < y_actual)
+    mae_by_range = error_df.groupby('Popularity Range')['Absolute Error'].mean().to_dict()
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        st.metric("Overestimations", f"{over_predictions:,}",
+                 help="Predictions higher than actual popularity")
+    with col2:
+        st.metric("Underestimations", f"{under_predictions:,}",
+                 help="Predictions lower than actual popularity")
+    with col3:
+        accuracy_within_10 = np.sum(np.abs(residuals) <= 10) / len(residuals) * 100
+        st.metric("Within ±10 Points", f"{accuracy_within_10:.1f}%",
+                 help="Percentage of predictions within 10 points of actual")
+
+    # Best/worst performance ranges
+    if mae_by_range:
+        best_range = min(mae_by_range, key=mae_by_range.get)
+        worst_range = max(mae_by_range, key=mae_by_range.get)
+
+        st.success(f"""
+        **Best Performance:** {best_range} popularity range (MAE: {mae_by_range[best_range]:.2f} points)
+        """)
+
+        st.warning(f"""
+        **Needs Improvement:** {worst_range} popularity range (MAE: {mae_by_range[worst_range]:.2f} points)
+        """)
+
+    # Model explanation
+    st.info(f"""
+    **Understanding R² = {sample_r2:.4f}:**
+
+    Audio features alone explain ~{sample_r2*100:.1f}% of popularity variance. The remaining ~{(1-sample_r2)*100:.1f}% comes from:
+    - Artist fame and follower count
+    - Marketing budget and promotion
+    - Playlist placements
+    - Social media trends and virality
+    - Release timing and cultural factors
+
+    **This is expected and aligns with academic research on music popularity prediction.**
+    """)
 
     # Model metadata
     with st.expander("📋 View Model Metadata"):

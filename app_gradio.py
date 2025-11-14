@@ -23,7 +23,7 @@ def load_data():
     return df
 
 def load_ml_data():
-    """Load ML-ready data - use full dataset for consistency"""
+    """Load ML-ready data - use randomized sample from full dataset"""
     df = pd.read_parquet('data/processed/cleaned_spotify_data.parquet')
 
     _, metadata, _ = load_model()
@@ -40,8 +40,11 @@ def load_ml_data():
     mask = ~(X.isnull().any(axis=1) | y.isnull())
     X, y = X[mask], y[mask]
 
-    # Sample for performance (use 5000 samples)
-    return X.iloc[:5000], y.iloc[:5000]
+    # Use RANDOMIZED sample for performance (to avoid sorted data bias)
+    # Dataset is sorted by popularity, so we must shuffle!
+    sample_size = min(5000, len(X))
+    indices = np.random.RandomState(42).permutation(len(X))[:sample_size]
+    return X.iloc[indices], y.iloc[indices]
 
 def load_model():
     """Load the latest trained model"""
