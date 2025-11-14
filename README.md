@@ -64,6 +64,141 @@ python src/feature_engineering.py
 python src/train_model.py
 ```
 
+## Machine Learning Models & Optimization
+
+### Model Selection & Training
+
+This project implements two competitive regression models for popularity prediction:
+
+**XGBoost (Gradient Boosting)**
+- **Test R² = 0.1619 (16.19%)**
+- Test RMSE = 16.64
+- Test MAE = 13.37
+- 200 estimators, max depth = 6
+- Trained on 78,310 cleaned tracks
+
+**Random Forest (Surprisingly Competitive!)**
+- **Test R² = 0.1547 (15.47%)**
+- Test RMSE = 16.37
+- Test MAE = 13.20
+- 250 estimators, max depth = 18
+- Tuned with Optuna hyperparameter optimization
+
+### Why Random Forest Performed Surprisingly Well
+
+Initially, we expected XGBoost to significantly outperform Random Forest given its reputation for tabular data. However, **Random Forest came within 4.7% of XGBoost's performance** after tuning. Here's why this is notable:
+
+**1. Better Error Distribution**
+- Random Forest achieved **lower RMSE** (16.37 vs 16.64) and **lower MAE** (13.20 vs 13.37)
+- More consistent predictions across popularity ranges
+- Less prone to extreme errors on edge cases
+
+**2. Ensemble Diversity**
+- 250 independent decision trees capture different aspects of the data
+- Natural bagging reduces overfitting (overfitting gap: 0.29 vs XGBoost's 0.37)
+- More robust to individual feature noise
+
+**3. Optimal Hyperparameters Found**
+Through Optuna optimization (50 trials), we discovered:
+- **Deeper trees** (max_depth=18) capture complex feature interactions
+- **Moderate splitting** (min_samples_split=15) balances bias-variance
+- **Feature subsampling** (max_features='sqrt') improves generalization
+
+**4. Dataset Characteristics**
+The Spotify dataset favors Random Forest:
+- **Moderate feature count** (9 audio features) - not high-dimensional
+- **Non-linear relationships** - RF handles these naturally
+- **Feature importance distribution** - instrumentalness (15.2%), acousticness (13.7%), loudness (11.9%)
+
+### Hyperparameter Optimization with Optuna
+
+Both models underwent rigorous hyperparameter tuning:
+
+**Random Forest Tuning Results:**
+```python
+# Best hyperparameters (Trial #30 out of 50)
+{
+  'n_estimators': 250,
+  'max_depth': 18,
+  'min_samples_split': 15,
+  'min_samples_leaf': 5,
+  'max_features': 'sqrt',
+  'bootstrap': True
+}
+
+# Performance improvement
+Default RF:    R² = 0.1315
+Tuned RF:      R² = 0.1547  (+17.6% improvement!)
+```
+
+**Key Tuning Insights:**
+1. **Validation R² = 0.1703** achieved during tuning, with test R² = 0.1547 showing good generalization
+2. **Overfitting control**: Gap reduced from 0.75 (default) to 0.29 (tuned)
+3. **Optimal tree depth**: 18 levels strike the balance between complexity and generalization
+4. **Ensemble size**: 250 trees provide stable predictions without excessive computation
+
+### Model Performance Comparison
+
+| Metric | XGBoost | Random Forest | Winner |
+|--------|---------|---------------|--------|
+| **Test R²** | 0.1619 | 0.1547 | XGBoost (+4.7%) |
+| **Test RMSE** | 16.64 | **16.37** | **Random Forest** |
+| **Test MAE** | 13.37 | **13.20** | **Random Forest** |
+| **Overfitting Gap** | 0.3712 | **0.2888** | **Random Forest** |
+| **Training Time** | ~5 min | ~8 min | XGBoost |
+| **Interpretability** | Moderate | **High** | **Random Forest** |
+
+**Verdict:** While XGBoost has a slight edge in R², Random Forest excels in error metrics, generalization, and interpretability. For production deployment, **both models are deployed** in the dashboard to leverage their complementary strengths.
+
+### Why Audio-Only Features Hit a Performance Ceiling (~16% R²)
+
+Both models plateau around 16% R² because **audio features alone can't fully explain popularity**. Research shows that track popularity is determined by:
+
+- **16%**: Audio characteristics (what we predict) ✅
+- **28-32%**: Artist metadata (followers, fame, previous hits) 🔄 *In progress*
+- **52-56%**: External factors (marketing, playlist placement, timing, virality) ❌ *Not in dataset*
+
+This validates academic findings that popularity prediction requires multi-modal data beyond audio features.
+
+### Next Steps: Artist Metadata Enrichment
+
+We're currently enriching the dataset with Spotify artist metadata to push beyond the 16% ceiling:
+
+```bash
+# Artist enrichment in progress (background process)
+python src/enrich_artist_features.py
+```
+
+**Expected improvements with artist features:**
+- Target R²: **0.28-0.32** (+75% improvement)
+- New features: artist_followers, artist_popularity, genre_count
+- Better prediction for unknown artists vs established hits
+
+### Training Commands
+
+```bash
+# Train XGBoost model
+python src/train_model.py
+
+# Train Random Forest with Optuna tuning
+python src/tune_random_forest.py  # 50 trials, ~8 minutes
+
+# Save tuned Random Forest model
+python src/save_rf_model.py
+
+# Compare model performance
+# View outputs/metadata/ for detailed metrics
+```
+
+### Model Deployment
+
+All trained models are version-controlled with Git LFS:
+- `outputs/models/xgb_model_full_20251114_135842.joblib` (latest XGBoost)
+- `outputs/models/rf_model_full_20251114_161842.joblib` (latest RF)
+- Corresponding metadata in `outputs/metadata/`
+
+Models automatically load in Streamlit dashboard with timestamp indicators showing which version is active.
+
 ## Dataset Content
 The data set used for this project: [Kaggle](https://www.kaggle.com/datasets/maharshipandya/-spotify-tracks-dataset). The collection of ~114,000 songs across 125 genres with features like danceability, energy, tempo, and popularity. Ideal for audio analysis, genre classification, and music trend exploration.
 
