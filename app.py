@@ -298,7 +298,7 @@ with tab2:
         color_discrete_sequence=['#1DB954']
     )
     fig.update_layout(height=400, showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Audio Features
     st.markdown("### 🎼 Audio Feature Distributions")
@@ -318,7 +318,7 @@ with tab2:
         )
 
     fig.update_layout(height=600, title_text="Audio Features Distribution")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Genre Analysis
     st.markdown("### 🎸 Top 20 Genres by Track Count")
@@ -333,7 +333,7 @@ with tab2:
         color_continuous_scale='Greens'
     )
     fig.update_layout(height=600, showlegend=False)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Mood/Energy Analysis
     st.markdown("### 😊 Mood & Energy Classification")
@@ -347,7 +347,7 @@ with tab2:
             title='Mood Distribution',
             color_discrete_sequence=px.colors.sequential.Greens
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col2:
         energy_counts = df['energy_category'].value_counts()
@@ -357,7 +357,7 @@ with tab2:
             title='Energy Level Distribution',
             color_discrete_sequence=px.colors.sequential.Teal
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     # Correlation Heatmap
     st.markdown("### 🔥 Feature Correlation Heatmap")
@@ -375,7 +375,7 @@ with tab2:
         title='Audio Features Correlation Matrix'
     )
     fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Scatter plot
     st.markdown("### 📊 Interactive Scatter Plot")
@@ -397,7 +397,7 @@ with tab2:
         opacity=0.6
     )
     fig.update_layout(height=600)
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
 # ============================================================================
 # TAB 3: ML Model
@@ -484,7 +484,7 @@ with tab3:
     fig.update_traces(texttemplate='%{text:.3f}', textposition='outside')
     fig.update_layout(height=max(400, len(top_features) * 30), showlegend=False)
     fig.update_yaxes(autorange="reversed")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width='stretch')
 
     # Key insights
     st.info(f"""
@@ -547,7 +547,7 @@ with tab3:
             )
         )
         fig.update_layout(height=400)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     with col2:
         # Residuals
@@ -560,7 +560,7 @@ with tab3:
             color_discrete_sequence=['#1DB954']
         )
         fig.update_layout(height=400, showlegend=False)
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width='stretch')
 
     # Model metadata
     with st.expander("📋 View Model Metadata"):
